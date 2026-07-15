@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Okuma Dostum</title>
+
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/dist/css/open-dyslexic.min.css" />
+    
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+<body class="fs-medium">
+
+<div id="focusRuler" aria-hidden="true">
+  <div id="rulerMaskTop"></div>
+  <div id="rulerBand"></div>
+  <div id="rulerMaskBottom"></div>
+</div>
+
+<div class="wrapper">
+
+  <header class="site-header">
+    <h1>📖 Okuma Dostum</h1>
+    <p>Türkçe heceleme · Renkli okuma · Hız analizi · Sesli okuma</p>
+  </header>
+
+  <section class="panel" aria-label="Metin girişi">
+    <div class="panel-head">
+      <span class="panel-head-title">Metin Girişi</span>
+
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="fontSizeSelect">Yazı Boyutu</label>
+        <select id="fontSizeSelect" aria-label="Yazı boyutu seç">
+          <option value="fs-small">Küçük</option>
+          <option value="fs-medium" selected>Orta</option>
+          <option value="fs-large">Büyük</option>
+        </select>
+      </div>
+
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="syllableToggle">Heceleme</label>
+        <select id="syllableToggle" aria-label="Heceleme">
+          <option value="on" selected>Açık</option>
+          <option value="off">Kapalı</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="convertBtn" onclick="convertText()">
+        Dönüştür
+      </button>
+    </div>
+
+    <textarea
+      id="inputText"
+      placeholder="Metninizi buraya yapıştırın veya yazın... (en fazla 2000 karakter)"
+      maxlength="2000"
+      rows="8"
+      aria-label="Dönüştürülecek metin"
+      spellcheck="false"
+    ></textarea>
+
+    <div class="input-footer">
+      <span class="char-count" id="charCount">0 / 2000 karakter · 0 kelime</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Okuma alanı">
+    <div class="panel-head">
+      <span class="panel-head-title">Okuma Alanı</span>
+
+      <button class="btn btn-info" id="ttsBtn" onclick="toggleTTS()"
+        aria-label="Sesli oku">
+        🔊 Sesli Oku
+      </button>
+
+      <button class="btn btn-neutral btn-ruler-off" id="rulerBtn"
+        onclick="toggleRuler()" aria-label="Satır odaklayıcı">
+        👁 Odaklayıcı: Kapalı
+      </button>
+
+      <div class="legend" id="legend" style="display:none">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hece-1)"></div>1. hece</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hece-2)"></div>2. hece</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hece-3)"></div>3. hece</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hece-4)"></div>4. hece</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hece-5)"></div>5+. hece</div>
+      </div>
+    </div>
+
+    <div style="padding: 12px 18px; background: var(--bg-ctrl); border-bottom: 1px solid var(--border);">
+      <div class="speed-row">
+        <span class="ctrl-label">Okuma Hızı</span>
+        <input
+          type="range"
+          id="speedSlider"
+          min="0.5" max="1.5" step="0.05" value="0.8"
+          aria-label="Okuma hızı"
+        />
+        <span id="speedValue" aria-live="polite">0.80×</span>
+      </div>
+      <div class="speed-labels" style="width:160px;margin-left:calc(0.78em * 7 + 10px)">
+        <span>Yavaş</span>
+        <span>Normal</span>
+        <span>Hızlı</span>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div id="outputArea" class="empty"
+        aria-live="polite" role="region" aria-label="Okuma metni">
+        Metninizi yazıp "Dönüştür"e tıklayın.
+      </div>
+      <div id="ttsStatus" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Okuma sayacı">
+    <div class="panel-head">
+      <span class="panel-head-title">Okuma Sayacı</span>
+    </div>
+    <div class="panel-body">
+      <div class="timer-wrap">
+        <div class="timer-top">
+          <div class="word-badge" id="wordBadge">0 kelime</div>
+          <small style="font-size:0.75em;color:var(--text-muted)">
+            Sayacı başlatmadan önce metni dönüştürün
+          </small>
+        </div>
+
+        <div class="timer-display" id="timerDisplay" aria-live="polite" aria-atomic="true">
+          00<span class="unit">dk</span>
+          00<span class="unit">sn</span>
+          <span style="font-size:0.55em;color:var(--text-muted)">00</span><span class="unit" style="font-size:0.3em">sal</span>
+        </div>
+
+        <div class="timer-buttons">
+          <button class="btn btn-primary" id="startBtn" onclick="startTimer()">▶ Sayacı Başlat</button>
+          <button class="btn btn-danger"  id="stopBtn"  onclick="stopTimer()"  disabled>■ Sayacı Durdur</button>
+          <button class="btn btn-neutral" id="resetBtn" onclick="resetTimer()">↺ Sıfırla</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel report-section" id="reportSection"
+    aria-label="Okuma raporu" aria-live="polite">
+    <div class="panel-head">
+      <span class="panel-head-title">Okuma Raporu</span>
+    </div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="report-grid"        id="reportGrid"></div>
+      <div class="report-comment"     id="reportComment"></div>
+      <hr class="divider" />
+      <div class="report-history-title">Geçmiş Okumalar (Oturum içi)</div>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <section class="about-section" aria-label="Hakkımızda">
+    <h2>Hakkımızda</h2>
+    <p>
+      <strong>Okuma Dostum</strong>, okuma sürecini herkes için kolay ve erişilebilir kılan dijital bir rehberdir.
+       Başta disleksi ve DEHB tanılı bireyler olmak üzere; yeni okuma öğrenen çocuklardan, 
+       metinleri dinleyerek anlamlandırmak isteyen her yaştan okura hitap eder. "Dinamik Odaklayıcı" ve kişiselleştirilebilir arayüzüyle 
+       bilişsel engelleri ortadan kaldıran platform, her kullanıcının kendi hızında ve tarzında ilerleyebileceği engelsiz bir okuma deneyimi sunar.
+
+    </p>
+    <ul class="about-list">
+      <li>TDK uyumlu Türkçe heceleme algoritması ile metni hecelerine ayırır; göz, kelimeyi daha kolay tanır.</li>
+      <li>Döngüsel hece renklendirme sistemi, harf karışmasını önlemeye yardımcı olur.</li>
+      <li>OpenDyslexic fontu, harflerin alt ağırlığı sayesinde disleksik okuyucuların harf karıştırma oranını azaltır.</li>
+      <li>Dinamik Satır Odaklayıcı, yazı boyutuna uyum sağlayarak yanlış satır takibini önler.</li>
+      <li>Sesli okuma, senkronize kelime vurgulama, görsel ve işitsel kanalı eş zamanlı destekler.</li>
+      <li>Okuma hızı takibi ile gelişiminizi somut verilerle görebilir, motivasyonunuzu koruyabilirsiniz.</li>
+    </ul>
+    <p>
+      Bu araç tıbbi bir müdahale değildir; okuma pratiğini destekleyen bir yardımcıdır.
+    </p>
+    <div class="about-footer">Sevgiyle kalın · Herkes için ücretsizdir. </div>
+  </section>
+
+</div><script src="app.js"></script>
+
+</body>
+</html>

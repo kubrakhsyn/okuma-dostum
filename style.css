@@ -1,0 +1,499 @@
+ /* ================================================================
+       1. CSS DEĞİŞKENLERİ & RESET
+    ================================================================ */
+    :root {
+      --bg-page    : #F5F5DC;
+      --bg-panel   : #FDFDF3;
+      --bg-ctrl    : #EEEEDA;
+      --bg-accent-s: #DFF0D8;
+      --accent     : #4A7A41;
+      --accent-h   : #356030;
+      --danger     : #A33030;
+      --danger-h   : #7A2020;
+      --info       : #1a5fa0;
+      --info-h     : #0d4070;
+      --neutral    : #7A7060;
+      --text       : #333333;
+      --text-muted : #666050;
+      --border     : #D0CDB5;
+      --radius     : 12px;
+      --shadow     : 0 2px 14px rgba(0,0,0,0.08);
+      --font       : 'OpenDyslexic', 'OpenDyslexic Regular', 'Comic Sans MS', cursive, sans-serif;
+
+      /* Hece renkleri */
+      --hece-1: #1a6db5;
+      --hece-2: #b52020;
+      --hece-3: #2e8a3e;
+      --hece-4: #9a5c00;
+      --hece-5: #6a1fa0;
+
+      /* ─── Odaklayıcı ───
+         --ruler-half-px: JS tarafından font boyutuna göre güncellenir.
+         Başlangıç değeri Orta (17px × 1.8 ≈ 30px) için ayarlıdır. */
+      --ruler-half-px : 30px;
+      --ruler-color   : rgba(255, 230, 80, 0.30);
+      --mask-color    : rgba(0,   0,   0,  0.50);
+
+      /* TTS vurgu renkleri */
+      --tts-word-bg   : rgba(255, 210, 0,  0.50);
+      --tts-word-out  : rgba(190, 140, 0,  0.70);
+      --tts-hece-bg   : rgba(255, 240, 120, 0.55);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* OpenDyslexic tüm elementlere !important ile uygulanır */
+    * { font-family: var(--font) !important; }
+
+    body {
+      background : var(--bg-page);
+      color      : var(--text);
+      min-height : 100vh;
+      padding    : 36px 20px 80px;
+      line-height: 1.85;
+      font-size  : 17px;
+      cursor     : default;
+    }
+
+    /* ================================================================
+       2. YAZI BOYU SINIFLARI
+          JS hem body sınıfını değiştirir hem de --ruler-half-px'i günceller.
+          Formül: rulerHalf = fontSize × 1.8  (bir satırı rahatça kapsar)
+            Küçük  14px → ~25px
+            Orta   17px → ~30px
+            Büyük  22px → ~40px
+    ================================================================ */
+    body.fs-small  { font-size: 14px; }
+    body.fs-medium { font-size: 17px; }
+    body.fs-large  { font-size: 22px; }
+
+    /* ================================================================
+       3. LAYOUT
+    ================================================================ */
+    .wrapper {
+      max-width     : 720px;
+      margin        : 0 auto;
+      display       : flex;
+      flex-direction: column;
+      gap           : 22px;
+    }
+
+    /* ================================================================
+       4. BAŞLIK
+    ================================================================ */
+    .site-header { text-align: center; }
+
+    .site-header h1 {
+      font-size     : 1.6em;
+      color         : var(--accent);
+      font-weight   : 700;
+      letter-spacing: 0.01em;
+    }
+
+    .site-header p {
+      font-size : 0.82em;
+      color     : var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ================================================================
+       5. PANEL
+    ================================================================ */
+    .panel {
+      background   : var(--bg-panel);
+      border       : 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow   : var(--shadow);
+      overflow     : hidden;
+    }
+
+    .panel-head {
+      background   : var(--bg-ctrl);
+      border-bottom: 1px solid var(--border);
+      padding      : 12px 18px;
+      display      : flex;
+      align-items  : center;
+      flex-wrap    : wrap;
+      gap          : 14px;
+    }
+
+    .panel-head-title {
+      font-size  : 0.82em;
+      color      : var(--text-muted);
+      font-weight: 700;
+    }
+
+    .panel-body { padding: 18px; }
+
+    /* ================================================================
+       6. KONTROLLER
+    ================================================================ */
+    .ctrl-group {
+      display    : flex;
+      align-items: center;
+      gap        : 8px;
+    }
+
+    .ctrl-label {
+      font-size  : 0.78em;
+      color      : var(--text-muted);
+      white-space: nowrap;
+    }
+
+    select, button, input, textarea { font-family: var(--font) !important; }
+
+    select {
+      font-size    : 0.82em;
+      background   : var(--bg-panel);
+      color        : var(--text);
+      padding      : 6px 10px;
+      border       : 1px solid var(--border);
+      border-radius: 7px;
+      cursor       : pointer;
+      outline      : none;
+      transition   : border-color 0.15s;
+    }
+    select:hover, select:focus { border-color: var(--accent); }
+
+    .btn {
+      font-size    : 0.82em;
+      padding      : 8px 18px;
+      font-weight  : 700;
+      border       : none;
+      border-radius: 7px;
+      color        : #fff;
+      cursor       : pointer;
+      transition   : background 0.15s, transform 0.1s;
+    }
+    .btn:active   { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary { background: var(--accent); }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-h); }
+
+    .btn-danger  { background: var(--danger); }
+    .btn-danger:hover:not(:disabled)  { background: var(--danger-h); }
+
+    .btn-info    { background: var(--info); }
+    .btn-info:hover:not(:disabled)    { background: var(--info-h); }
+
+    .btn-neutral { background: var(--neutral); }
+    .btn-neutral:hover:not(:disabled) { background: #5a5045; }
+
+    .btn-ruler-on  { background: #7a5800; }
+    .btn-ruler-off { background: var(--neutral); }
+
+    .btn-tts-playing { background: var(--danger); animation: pulse 1.4s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.65; }
+    }
+
+    /* ================================================================
+       7. METİN GİRİŞ ALANI
+    ================================================================ */
+    #inputText {
+      font-size  : 1em !important;
+      width      : 100%;
+      padding    : 14px;
+      border     : none;
+      border-radius: 0;
+      background : transparent;
+      resize     : vertical;
+      min-height : 160px;
+      color      : var(--text);
+      line-height: 1.85;
+      display    : block;
+    }
+    #inputText::placeholder { color: #aaa898; }
+    #inputText:focus { outline: none; }
+
+    .input-footer {
+      background     : var(--bg-ctrl);
+      border-top     : 1px solid var(--border);
+      padding        : 8px 18px;
+      display        : flex;
+      justify-content: space-between;
+      align-items    : center;
+      flex-wrap      : wrap;
+      gap            : 8px;
+    }
+
+    .char-count      { font-size: 0.75em; color: var(--text-muted); }
+    .char-count.warn { color: var(--danger); }
+
+    /* ================================================================
+       8. OKUMA ALANI
+    ================================================================ */
+    #outputArea {
+      font-size   : 1em !important;
+      line-height : 1.95;
+      word-spacing: 0.1em;
+      min-height  : 120px;
+      color       : var(--text);
+    }
+
+    #outputArea.empty {
+      color     : #b0a898;
+      font-style: italic;
+      font-size : 0.85em !important;
+    }
+
+    /* Hece renk sınıfları */
+    .hece   { font-weight: inherit; }
+    .hece-1 { color: var(--hece-1); }
+    .hece-2 { color: var(--hece-2); }
+    .hece-3 { color: var(--hece-3); }
+    .hece-4 { color: var(--hece-4); }
+    .hece-5 { color: var(--hece-5); }
+
+    /* ── TTS Vurgulama ──
+       .word-token          : her kelime sarmalayıcısı
+       .word-token.tts-active: aktif kelimenin arka planı
+       .hece.tts-hece-active: aktif kelime içindeki her hece ayrıca parlar
+       Geçiş animasyonu göz takibini kolaylaştırır. */
+    .word-token { display: inline; }
+
+    .word-token.tts-active {
+      background      : var(--tts-word-bg);
+      border-radius   : 4px;
+      outline         : 2px solid var(--tts-word-out);
+      outline-offset  : 1px;
+      transition      : background 0.1s ease, outline-color 0.1s ease;
+    }
+
+    /* Aktif kelime içindeki heceler de aydınlanır */
+    .word-token.tts-active .hece {
+      background   : var(--tts-hece-bg);
+      border-radius: 2px;
+      padding      : 0 1px;
+      transition   : background 0.1s ease;
+    }
+
+    /* ================================================================
+       9. SAYAÇ
+    ================================================================ */
+    .timer-wrap { display: flex; flex-direction: column; gap: 14px; }
+
+    .timer-top {
+      display        : flex;
+      align-items    : center;
+      justify-content: space-between;
+      flex-wrap      : wrap;
+      gap            : 10px;
+    }
+
+    .word-badge {
+      background   : var(--bg-accent-s);
+      color        : var(--accent);
+      border       : 1px solid #b8dcb0;
+      border-radius: 8px;
+      padding      : 5px 12px;
+      font-size    : 0.82em;
+      font-weight  : 700;
+    }
+
+    .timer-display {
+      font-size     : 2.4em;
+      font-weight   : 700;
+      color         : var(--text);
+      text-align    : center;
+      letter-spacing: 0.06em;
+      padding       : 8px 0;
+    }
+
+    .timer-display .unit {
+      font-size  : 0.45em;
+      color      : var(--text-muted);
+      font-weight: 400;
+      margin-left: 2px;
+    }
+
+    .timer-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ================================================================
+       10. RAPOR
+    ================================================================ */
+    .report-section { display: none; flex-direction: column; gap: 14px; }
+    .report-section.visible { display: flex; }
+
+    .report-grid {
+      display              : grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap                  : 10px;
+    }
+
+    .report-card        { background: var(--bg-ctrl); border-radius: 10px; padding: 12px 14px; }
+    .report-card-label  { font-size: 0.72em; color: var(--text-muted); margin-bottom: 4px; }
+    .report-card-value  { font-size: 1.4em; font-weight: 700; color: var(--text); }
+    .report-card-unit   { font-size: 0.7em; color: var(--text-muted); }
+
+    .report-comment {
+      background   : var(--bg-accent-s);
+      border-left  : 4px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding      : 12px 16px;
+      font-size    : 0.88em;
+      color        : #2a4a22;
+      line-height  : 1.7;
+    }
+
+    .report-history-title { font-size: 0.78em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+
+    .history-row {
+      display        : flex;
+      justify-content: space-between;
+      font-size      : 0.78em;
+      color          : var(--text-muted);
+      padding        : 5px 0;
+      border-bottom  : 1px solid var(--border);
+    }
+    .history-row:last-child { border-bottom: none; }
+
+    /* ================================================================
+       11. HAKKIMIZDA
+    ================================================================ */
+    .about-section {
+      background    : var(--bg-panel);
+      border        : 1px solid var(--border);
+      border-radius : var(--radius);
+      padding       : 26px 24px;
+      display       : flex;
+      flex-direction: column;
+      gap           : 12px;
+    }
+
+    .about-section h2  { font-size: 1em; color: var(--accent); }
+    .about-section p   { font-size: 0.84em; color: var(--text-muted); line-height: 1.8; }
+
+    .about-list        { display: flex; flex-direction: column; gap: 7px; padding-left: 0; list-style: none; }
+    .about-list li     { font-size: 0.82em; color: var(--text-muted); display: flex; gap: 8px; line-height: 1.7; }
+    .about-list li::before { content: "▸"; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .about-footer      { font-size: 0.72em; color: #b0a890; margin-top: 4px; }
+
+    /* ================================================================
+       12. RENK LEJANDİ
+    ================================================================ */
+    .legend      { display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.75em; }
+    .legend-item { display: flex; align-items: center; gap: 5px; color: var(--text-muted); }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ================================================================
+       13. YARDIMCI
+    ================================================================ */
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+
+    /* ================================================================
+       14. SATIR ODAKLAYICI (Focus Ruler / Reading Mask)
+       ─ Üç katman: üst karartma / aydınlık şerit / alt karartma
+       ─ Şerit yüksekliği CSS değişkeni --ruler-half-px ile kontrol edilir
+       ─ JS fontSizeSelect.change → updateRulerHeight() → CSS var güncellenir
+       ─ pointer-events:none → tüm tıklamalar sayfaya geçer
+    ================================================================ */
+    #focusRuler {
+      display       : none;
+      position      : fixed;
+      left          : 0;
+      top           : 0;
+      width         : 100%;
+      height        : 100%;
+      pointer-events: none;
+      z-index       : 9999;
+    }
+
+    #rulerMaskTop {
+      position  : absolute;
+      left      : 0; top: 0;
+      width     : 100%;
+      background: var(--mask-color);
+      /* transition kaldırıldı → fare takibini geciktiriyor */
+    }
+
+    #rulerBand {
+      position     : absolute;
+      left         : 0;
+      width        : 100%;
+      /* Yükseklik = var(--ruler-half-px) × 2 olarak CSS'te hesaplanamaz;
+         height JS tarafından inline style ile set edilir. */
+      background   : var(--ruler-color);
+      border-top   : 2px solid rgba(220,190,0,0.40);
+      border-bottom: 2px solid rgba(220,190,0,0.40);
+    }
+
+    #rulerMaskBottom {
+      position  : absolute;
+      left      : 0;
+      width     : 100%;
+      background: var(--mask-color);
+    }
+
+    /* ================================================================
+       15. TTS DURUM ÇUBUĞU
+    ================================================================ */
+    #ttsStatus {
+      font-size  : 0.78em;
+      color      : var(--text-muted);
+      min-height : 1.4em;
+      margin-top : 4px;
+      font-style : italic;
+    }
+
+    /* ================================================================
+       16. OKUMA HIZI SLIDER
+       Range input'un tarayıcılar arası tutarlı görünümü
+    ================================================================ */
+    .speed-row {
+      display    : flex;
+      align-items: center;
+      gap        : 10px;
+      flex-wrap  : wrap;
+    }
+
+    .speed-labels {
+      display        : flex;
+      justify-content: space-between;
+      font-size      : 0.68em;
+      color          : var(--text-muted);
+      margin-top     : 3px;
+    }
+
+    #speedSlider {
+      -webkit-appearance: none;
+      appearance        : none;
+      width             : 160px;
+      height            : 5px;
+      border-radius     : 3px;
+      background        : linear-gradient(to right, var(--accent) 0%, var(--accent) 30%, var(--border) 30%, var(--border) 100%);
+      outline           : none;
+      cursor            : pointer;
+      border            : none;
+    }
+
+    #speedSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width             : 18px;
+      height            : 18px;
+      border-radius     : 50%;
+      background        : var(--accent);
+      cursor            : pointer;
+      border            : 2px solid #fff;
+      box-shadow        : 0 0 0 2px var(--accent);
+    }
+
+    #speedSlider::-moz-range-thumb {
+      width       : 16px;
+      height      : 16px;
+      border-radius: 50%;
+      background  : var(--accent);
+      cursor      : pointer;
+      border      : 2px solid #fff;
+    }
+
+    #speedValue {
+      font-size  : 0.82em;
+      font-weight: 700;
+      color      : var(--accent);
+      min-width  : 32px;
+      text-align : center;
+    }
